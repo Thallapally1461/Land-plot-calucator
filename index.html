@@ -1,194 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Land Plot Drawer & Area Calculator</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-  body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    color: #f0f0f0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 1rem;
-  }
-  .container {
-    background: rgba(30, 30, 40, 0.85);
-    padding: 2.5rem 3rem;
-    border-radius: 18px;
-    max-width: 440px;
-    width: 100%;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-    text-align: center;
-  }
-  h1 {
-    font-weight: 700;
-    font-size: 2rem;
-    margin-bottom: 1.8rem;
-    color: #fbd72b;
-    text-shadow: 1px 1px 3px #a38200;
-  }
-  .tabs {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-  }
-  .tab {
-    padding: 0.7rem 1.5rem;
-    background: #1c2533;
-    border-radius: 25px;
-    margin: 0 0.5rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  .tab.active {
-    background: #fbd72b;
-    color: #222;
-  }
-  .tab:hover {
-    background: #2a3a52;
-  }
-  .tab.active:hover {
-    background: #d4b40c;
-  }
-  label {
-    display: block;
-    margin-top: 1.1rem;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-  }
-  input[type="number"], select {
-    width: 100%;
-    padding: 0.7rem 1rem;
-    border-radius: 10px;
-    border: none;
-    font-size: 1rem;
-    outline: none;
-    background-color: #1c2533;
-    color: #f0f0f0;
-    box-shadow: inset 1px 1px 3px rgba(255,255,255,0.1);
-    transition: background-color 0.3s ease;
-  }
-  input[type="number"]:focus, select:focus {
-    background-color: #2a3a52;
-  }
-  button {
-    margin-top: 2rem;
-    width: 100%;
-    padding: 0.9rem 0;
-    background: #fbd72b;
-    border: none;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: #222;
-    cursor: pointer;
-    box-shadow: 0 0 12px #fbd72b88;
-    transition: background 0.3s ease;
-  }
-  button:hover {
-    background: #d4b40c;
-    box-shadow: 0 0 16px #d4b40ccc;
-  }
-  .result {
-    margin-top: 1rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #fbd72b;
-    min-height: 2em;
-  }
-  .warning {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #ff5555;
-    min-height: 1.5em;
-  }
-  .info {
-    font-size: 0.9rem;
-    margin-top: 1rem;
-    color: #ccc;
-    text-align: left;
-  }
-  .hidden {
-    display: none;
-  }
-  canvas {
-    margin-top: 1rem;
-    border: 1px solid #ccc;
-    width: 100%;
-    max-width: 400px;
-    height: auto;
-    aspect-ratio: 4 / 3;
-  }
-  @media (max-width: 480px) {
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Land Plot Drawer & Area Calculator</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts for Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      color: #f0f0f0;
+    }
     .container {
-      padding: 2rem 1.5rem;
-      max-width: 350px;
+      background: rgba(30, 30, 40, 0.85);
+      border-radius: 18px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+    .tab {
+      transition: background 0.3s ease;
+    }
+    .tab:hover {
+      background: #2a3a52;
+    }
+    .tab.active {
+      background: #fbd72b;
+      color: #222;
+    }
+    .tab.active:hover {
+      background: #d4b40c;
+    }
+    /* Material-UI-like input styling */
+    .mui-input {
+      position: relative;
+      margin-top: 1.5rem;
+    }
+    .mui-input label {
+      position: absolute;
+      top: -0.5rem;
+      left: 0.75rem;
+      background: #1c2533;
+      padding: 0 0.25rem;
+      font-size: 0.75rem;
+      color: #f0f0f0;
+      transition: all 0.2s ease;
+    }
+    .mui-input input, .mui-input select {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      border: 1px solid #f0f0f0;
+      font-size: 1rem;
+      background-color: #1c2533;
+      color: #f0f0f0;
+      transition: border-color 0.3s ease;
+    }
+    .mui-input input:focus, .mui-input select:focus {
+      outline: none;
+      border-color: #fbd72b;
+      background-color: #2a3a52;
+    }
+    .mui-input input:invalid:not(:placeholder-shown) {
+      border-color: #ff5555;
+    }
+    button {
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    button:hover {
+      background: #d4b40c !important;
+      box-shadow: 0 0 16px #d4b40ccc !important;
     }
     canvas {
-      max-width: 100%;
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      aspect-ratio: 4 / 3;
+      border: 1px solid #ccc;
     }
-  }
-</style>
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Land Plot Drawer & Area Calculator</h1>
-    <div class="tabs">
-      <div class="tab active" onclick="showSection('area-section')">Land Plot</div>
-      <div class="tab" onclick="showSection('converter-section')">Unit Converter</div>
+  <div class="container max-w-lg w-full mx-4 p-6 sm:p-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-yellow-400 text-center mb-6 sm:mb-8">
+      Land Plot Drawer & Area Calculator
+    </h1>
+    <div class="flex justify-center mb-6">
+      <div class="tab px-4 py-2 mx-2 rounded-full font-semibold bg-gray-700 active" onclick="showSection('area-section')">
+        Land Plot
+      </div>
+      <div class="tab px-4 py-2 mx-2 rounded-full font-semibold bg-gray-700" onclick="showSection('converter-section')">
+        Unit Converter
+      </div>
     </div>
 
     <!-- Land Plot Drawer Section -->
     <div id="area-section">
-      <form id="areaForm" onsubmit="drawPlotAndCalculateArea(event)" novalidate>
-        <label for="unit">Unit of Measurement:</label>
-        <select id="unit" name="unit" onchange="drawPlotAndCalculateArea({ preventDefault: () => {} })">
-          <option value="meter">Meters (m)</option>
-          <option value="feet">Feet (ft)</option>
-          <option value="yard">Yards (yd)</option>
-          <option value="kilometer">Kilometers (km)</option>
-          <option value="mile">Miles (mi)</option>
-        </select>
+      <form id="areaForm" onsubmit="drawPlotAndCalculateArea(event)" novalidate class="space-y-4">
+        <div class="mui-input">
+          <label for="unit">Unit of Measurement</label>
+          <select id="unit" name="unit" onchange="drawPlotAndCalculateArea({ preventDefault: () => {} })">
+            <option value="meter">Meters (m)</option>
+            <option value="feet">Feet (ft)</option>
+            <option value="yard">Yards (yd)</option>
+            <option value="kilometer">Kilometers (km)</option>
+            <option value="mile">Miles (mi)</option>
+          </select>
+        </div>
 
-        <label for="preferredAreaUnit">Preferred Area Unit:</label>
-        <select id="preferredAreaUnit" name="preferredAreaUnit" onchange="drawPlotAndCalculateArea({ preventDefault: () => {} })">
-          <option value="auto">Auto (Recommended)</option>
-          <option value="sqm">Square Meter (sqm)</option>
-          <option value="sqft">Square Feet (sqft)</option>
-          <option value="sqyard">Square Yard (sq yard)</option>
-          <option value="gaj">Gaj</option>
-          <option value="cent">Cent</option>
-          <option value="katha">Katha</option>
-          <option value="guntha">Guntha</option>
-          <option value="bigha">Bigha</option>
-          <option value="acre">Acre</option>
-          <option value="hectare">Hectare</option>
-        </select>
+        <div class="mui-input">
+          <label for="preferredAreaUnit">Preferred Area Unit</label>
+          <select id="preferredAreaUnit" name="preferredAreaUnit" onchange="drawPlotAndCalculateArea({ preventDefault: () => {} })">
+            <option value="auto">Auto (Recommended)</option>
+            <option value="sqm">Square Meter (sqm)</option>
+            <option value="sqft">Square Feet (sqft)</option>
+            <option value="sqyard">Square Yard (sq yard)</option>
+            <option value="gaj">Gaj</option>
+            <option value="cent">Cent</option>
+            <option value="katha">Katha</option>
+            <option value="guntha">Guntha</option>
+            <option value="bigha">Bigha</option>
+            <option value="acre">Acre</option>
+            <option value="hectare">Hectare</option>
+          </select>
+        </div>
 
-        <label for="width1">Width (Front):</label>
-        <input type="number" id="width1" name="width1" min="0" step="any" placeholder="Enter front width" required oninput="drawPlotAndCalculateArea({ preventDefault: () => {} })" />
-        
-        <label for="width2">Width (Back):</label>
-        <input type="number" id="width2" name="width2" min="0" step="any" placeholder="Enter back width" required oninput="drawPlotAndCalculateArea({ preventDefault: () => {} })" />
-        
-        <label for="height1">Height (Left):</label>
-        <input type="number" id="height1" name="height1" min="0" step="any" placeholder="Enter left height" required oninput="drawPlotAndCalculateArea({ preventDefault: () => {} })" />
-        
-        <label for="height2">Height (Right):</label>
-        <input type="number" id="height2" name="height2" min="0" step="any" placeholder="Enter right height" required oninput="drawPlotAndCalculateArea({ preventDefault: () => {} })" />
-        
-        <button type="submit">Draw Plot & Calculate Area</button>
+        <div class="mui-input">
+          <label for="width1">Width (Front)</label>
+          <input
+            type="number"
+            id="width1"
+            name="width1"
+            min="0"
+            step="any"
+            placeholder="Enter front width"
+            required
+            oninput="drawPlotAndCalculateArea({ preventDefault: () => {} })"
+          />
+        </div>
+
+        <div class="mui-input">
+          <label for="width2">Width (Back)</label>
+          <input
+            type="number"
+            id="width2"
+            name="width2"
+            min="0"
+            step="any"
+            placeholder="Enter back width"
+            required
+            oninput="drawPlotAndCalculateArea({ preventDefault: () => {} })"
+          />
+        </div>
+
+        <div class="mui-input">
+          <label for="height1">Height (Left)</label>
+          <input
+            type="number"
+            id="height1"
+            name="height1"
+            min="0"
+            step="any"
+            placeholder="Enter left height"
+            required
+            oninput="drawPlotAndCalculateArea({ preventDefault: () => {} })"
+          />
+        </div>
+
+        <div class="mui-input">
+          <label for="height2">Height (Right)</label>
+          <input
+            type="number"
+            id="height2"
+            name="height2"
+            min="0"
+            step="any"
+            placeholder="Enter right height"
+            required
+            oninput="drawPlotAndCalculateArea({ preventDefault: () => {} })"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="w-full py-3 bg-yellow-400 text-gray-900 font-bold rounded-full shadow-lg hover:bg-yellow-500"
+        >
+          Draw Plot & Calculate Area
+        </button>
       </form>
-      <canvas id="plotCanvas"></canvas>
-      <div class="result" id="area-result"></div>
-      <div class="warning" id="warning-message"></div>
-      <div class="info">
+      <canvas id="plotCanvas" class="mt-4 mx-auto"></canvas>
+      <div class="text-yellow-400 font-semibold text-lg mt-4 text-center" id="area-result"></div>
+      <div class="text-red-500 text-sm mt-2 text-center" id="warning-message"></div>
+      <div class="text-gray-400 text-sm mt-4 text-left">
         <p><strong>Note:</strong> Enter the widths (front and back) and heights (left and right) in the selected unit to draw a scaled layout and calculate the area of the land plot.</p>
         <p>Vertices are labeled A (bottom-left), B (bottom-right), C (top-right), D (top-left).</p>
       </div>
@@ -196,481 +206,489 @@
 
     <!-- Unit Converter Section -->
     <div id="converter-section" class="hidden">
-      <form id="converterForm" onsubmit="convertUnits(event)" novalidate>
-        <label for="fromUnit">From Unit:</label>
-        <select id="fromUnit" onchange="updateToUnits()">
-          <option value="sqft">Square Feet (sqft)</option>
-          <option value="sqm">Square Meter (sqm)</option>
-          <option value="acre">Acre</option>
-          <option value="hectare">Hectare</option>
-          <option value="gaj">Gaj</option>
-          <option value="bigha">Bigha</option>
-          <option value="sqyard">Square Yard (sq yard)</option>
-          <option value="cent">Cent</option>
-          <option value="katha">Katha</option>
-          <option value="guntha">Guntha</option>
-          <option value="meter">Meter</option>
-          <option value="feet">Feet</option>
-          <option value="inches">Inches</option>
-          <option value="mm">Millimeter (mm)</option>
-          <option value="cm">Centimeter (cm)</option>
-          <option value="cubicfeet">Cubic Feet</option>
-          <option value="cubicmeter">Cubic Meter</option>
-        </select>
+      <form id="converterForm" onsubmit="convertUnits(event)" novalidate class="space-y-4">
+        <div class="mui-input">
+          <label for="fromUnit">From Unit</label>
+          <select id="fromUnit" onchange="updateToUnits()">
+            <option value="sqft">Square Feet (sqft)</option>
+            <option value="sqm">Square Meter (sqm)</option>
+            <option value="acre">Acre</option>
+            <option value="hectare">Hectare</option>
+            <option value="gaj">Gaj</option>
+            <option value="bigha">Bigha</option>
+            <option value="sqyard">Square Yard (sq yard)</option>
+            <option value="cent">Cent</option>
+            <option value="katha">Katha</option>
+            <option value="guntha">Guntha</option>
+            <option value="meter">Meter</option>
+            <option value="feet">Feet</option>
+            <option value="inches">Inches</option>
+            <option value="mm">Millimeter (mm)</option>
+            <option value="cm">Centimeter (cm)</option>
+            <option value="cubicfeet">Cubic Feet</option>
+            <option value="cubicmeter">Cubic Meter</option>
+          </select>
+        </div>
 
-        <label for="toUnit">To Unit:</label>
-        <select id="toUnit"></select>
+        <div class="mui-input">
+          <label for="toUnit">To Unit</label>
+          <select id="toUnit"></select>
+        </div>
 
-        <label for="value">Value:</label>
-        <input type="number" id="value" name="value" min="0" step="any" placeholder="Enter value to convert" required />
+        <div class="mui-input">
+          <label for="value">Value</label>
+          <input
+            type="number"
+            id="value"
+            name="value"
+            min="0"
+            step="any"
+            placeholder="Enter value to convert"
+            required
+          />
+        </div>
 
-        <button type="submit">Convert</button>
+        <button
+          type="submit"
+          class="w-full py-3 bg-yellow-400 text-gray-900 font-bold rounded-full shadow-lg hover:bg-yellow-500"
+        >
+          Convert
+        </button>
       </form>
-      <div class="result" id="converter-result"></div>
-      <div class="info">
+      <div class="text-yellow-400 font-semibold text-lg mt-4 text-center" id="converter-result"></div>
+      <div class="text-gray-400 text-sm mt-4 text-left">
         <p><strong>Note:</strong> Select the units to convert between various area and length measurements.</p>
       </div>
     </div>
   </div>
 
-<script>
-  // Show/hide sections
-  function showSection(sectionId) {
-    document.getElementById('area-section').classList.add('hidden');
-    document.getElementById('converter-section').classList.add('hidden');
-    document.getElementById(sectionId).classList.remove('hidden');
-
-    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-    event.target.classList.add('active');
-  }
-
-  // Conversion factors to meters (for side lengths)
-  const lengthConversionFactors = {
-    'meter': 1,
-    'feet': 0.3048,
-    'yard': 0.9144,
-    'kilometer': 1000,
-    'mile': 1609.34
-  };
-
-  // Unit symbols for side length display
-  const unitSymbols = {
-    'meter': 'm',
-    'feet': 'ft',
-    'yard': 'yd',
-    'kilometer': 'km',
-    'mile': 'mi'
-  };
-
-  // Conversion factors for area (from square meters)
-  const areaConversionFactors = {
-    'sqm': 1,
-    'sqft': 10.7639,
-    'sqyard': 1.19599,
-    'gaj': 1.19599,
-    'cent': 0.0247105,
-    'katha': 0.00747494, // 1 katha = 1361.25 sqft = 126.465 sqm
-    'guntha': 0.00988422, // 1 guntha = 1089 sqft = 101.171 sqm
-    'bigha': 0.000398406, // 1 bigha = 27000 sqft = 2508.382 sqm
-    'acre': 0.000247105,
-    'hectare': 0.0001
-  };
-
-  // Area unit symbols for display
-  const areaUnitSymbols = {
-    'sqm': 'sqm',
-    'sqft': 'sqft',
-    'sqyard': 'sq yard',
-    'gaj': 'gaj',
-    'cent': 'cent',
-    'katha': 'katha',
-    'guntha': 'guntha',
-    'bigha': 'bigha',
-    'acre': 'acre',
-    'hectare': 'hectare'
-  };
-
-  // Function to choose the appropriate area unit based on size (in square meters)
-  function chooseAreaUnit(areaInSqm) {
-    if (areaInSqm < 50) {
-      return 'sqm';
-    } else if (areaInSqm < 500) {
-      return 'sqft';
-    } else if (areaInSqm < 1000) {
-      return 'gaj';
-    } else if (areaInSqm < 1500) {
-      return 'sqyard';
-    } else if (areaInSqm < 3000) {
-      return 'katha';
-    } else if (areaInSqm < 5000) {
-      return 'guntha';
-    } else if (areaInSqm < 8000) {
-      return 'bigha';
-    } else if (areaInSqm < 20000) {
-      return 'cent';
-    } else if (areaInSqm < 100000) {
-      return 'acre';
-    } else {
-      return 'hectare';
-    }
-  }
-
-  // Function to check if the quadrilateral is self-intersecting
-  function isSelfIntersecting(points) {
-    // Check for intersection between non-adjacent sides (e.g., AB with CD, AD with BC)
-    function doLinesIntersect(p1, p2, p3, p4) {
-      const det = (p2.x - p1.x) * (p4.y - p3.y) - (p2.y - p1.y) * (p4.x - p3.x);
-      if (det === 0) return false; // Parallel lines
-      const t = ((p3.x - p1.x) * (p4.y - p3.y) - (p3.y - p1.y) * (p4.x - p3.x)) / det;
-      const u = -((p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x)) / det;
-      return t > 0 && t < 1 && u > 0 && u < 1;
+  <script>
+    // Show/hide sections
+    function showSection(sectionId) {
+      try {
+        document.getElementById('area-section').classList.add('hidden');
+        document.getElementById('converter-section').classList.add('hidden');
+        document.getElementById(sectionId).classList.remove('hidden');
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        event.target.classList.add('active');
+      } catch (e) {
+        console.error('Error in showSection:', e);
+      }
     }
 
-    // Check AB with CD
-    if (doLinesIntersect(points[0], points[1], points[2], points[3])) return true;
-    // Check AD with BC
-    if (doLinesIntersect(points[0], points[3], points[1], points[2])) return true;
-    return false;
-  }
+    // Conversion factors to meters (for side lengths)
+    const lengthConversionFactors = {
+      'meter': 1,
+      'feet': 0.3048,
+      'yard': 0.9144,
+      'kilometer': 1000,
+      'mile': 1609.34
+    };
 
-  // Land Plot Drawer and Area Calculator
-  function drawPlotAndCalculateArea(event) {
-    event.preventDefault();
-    const unit = document.getElementById('unit').value;
-    const preferredAreaUnit = document.getElementById('preferredAreaUnit').value;
-    const width1 = parseFloat(document.getElementById('width1').value);
-    const width2 = parseFloat(document.getElementById('width2').value);
-    const height1 = parseFloat(document.getElementById('height1').value);
-    const height2 = parseFloat(document.getElementById('height2').value);
+    // Unit symbols for side length display
+    const unitSymbols = {
+      'meter': 'm',
+      'feet': 'ft',
+      'yard': 'yd',
+      'kilometer': 'km',
+      'mile': 'mi'
+    };
 
-    const warningDiv = document.getElementById('warning-message');
-    warningDiv.textContent = '';
-
-    if ([width1, width2, height1, height2].some(val => isNaN(val) || val <= 0)) {
-      warningDiv.textContent = 'Please enter valid positive numbers for all dimensions.';
-      document.getElementById('area-result').textContent = '';
-      const canvas = document.getElementById('plotCanvas');
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      return;
-    }
-
-    // Convert all dimensions to meters for drawing and area calculations
-    const factor = lengthConversionFactors[unit];
-    const width1Meters = width1 * factor;
-    const width2Meters = width2 * factor;
-    const height1Meters = height1 * factor;
-    const height2Meters = height2 * factor;
-
-    // Define the four vertices of the quadrilateral in meters
-    const pointsMeters = [
-      { x: 0, y: 0 },           // A (bottom-left)
-      { x: width1Meters, y: 0 }, // B (bottom-right)
-      { x: width2Meters, y: height2Meters }, // C (top-right)
-      { x: 0, y: height1Meters } // D (top-left)
-    ];
-
-    // Check if the quadrilateral is self-intersecting
-    if (isSelfIntersecting(pointsMeters)) {
-      warningDiv.textContent = 'The plot dimensions form a self-intersecting shape. Please adjust the values.';
-      document.getElementById('area-result').textContent = '';
-      const canvas = document.getElementById('plotCanvas');
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      return;
-    }
-
-    // Calculate area by splitting into two triangles (ABC and ADC)
-    function triangleArea(p1, p2, p3) {
-      return Math.abs(
-        (p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2
-      );
-    }
-    const areaABC = triangleArea(pointsMeters[0], pointsMeters[1], pointsMeters[2]); // Triangle ABC
-    const areaADC = triangleArea(pointsMeters[0], pointsMeters[3], pointsMeters[2]); // Triangle ADC
-    const areaInSqm = areaABC + areaADC;
-
-    // Determine the area unit for display
-    const areaUnit = preferredAreaUnit === 'auto' ? chooseAreaUnit(areaInSqm) : preferredAreaUnit;
-    const areaValue = areaInSqm * areaConversionFactors[areaUnit];
-    document.getElementById('area-result').textContent = `Area: ${areaValue.toFixed(2)} ${areaUnitSymbols[areaUnit]}`;
-
-    // Set canvas size dynamically based on container width
-    const canvas = document.getElementById('plotCanvas');
-    const containerWidth = document.querySelector('.container').offsetWidth - 60; // Account for padding
-    canvas.width = Math.min(400, containerWidth);
-    canvas.height = canvas.width * 0.75; // Maintain 4:3 aspect ratio
-
-    const ctx = canvas.getContext('2d');
-    const canvasWidth = canvas.width;
-    const canvasHeight = canvas.height;
-
-    // Clear the canvas
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-    // Find the bounding box of the quadrilateral to scale it
-    const minX = Math.min(...pointsMeters.map(p => p.x));
-    const maxX = Math.max(...pointsMeters.map(p => p.x));
-    const minY = Math.min(...pointsMeters.map(p => p.y));
-    const maxY = Math.max(...pointsMeters.map(p => p.y));
-    const plotWidthMeters = maxX - minX;
-    const plotHeightMeters = maxY - minY;
-    const maxDimension = Math.max(plotWidthMeters, plotHeightMeters);
-
-    const padding = Math.min(canvasWidth, canvasHeight) * 0.15; // Dynamic padding
-    const scale = Math.min((canvasWidth - padding * 2) / maxDimension, (canvasHeight - padding * 2) / maxDimension);
-
-    // Scale and translate points to fit within the canvas
-    const points = pointsMeters.map(p => ({
-      x: (p.x - minX) * scale + padding,
-      y: (p.y - minY) * scale + padding
-    }));
-
-    // Draw the quadrilateral (outer red line)
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, points[0].y);
-    for (let i = 1; i < points.length; i++) {
-      ctx.lineTo(points[i].x, points[i].y);
-    }
-    ctx.closePath();
-    ctx.strokeStyle = '#ff0000';
-    ctx.lineWidth = 4;
-    ctx.stroke();
-
-    // Draw the inner quadrilateral (black line)
-    const innerOffset = 10 / scale; // Adjust offset based on scale
-    const innerPoints = pointsMeters.map(p => ({
-      x: (p.x - minX) * scale + padding + innerOffset,
-      y: (p.y - minY) * scale + padding + innerOffset
-    }));
-    ctx.beginPath();
-    ctx.moveTo(innerPoints[0].x, innerPoints[0].y);
-    for (let i = 1; i < innerPoints.length; i++) {
-      ctx.lineTo(innerPoints[i].x, innerPoints[i].y);
-    }
-    ctx.closePath();
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Draw vertex markers and labels (A, B, C, D)
-    const vertexLabels = ['A', 'B', 'C', 'D'];
-    ctx.fillStyle = '#ffffff';
-    ctx.font = `${Math.min(canvasWidth, canvasHeight) * 0.04}px Poppins`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    points.forEach((point, i) => {
-      ctx.beginPath();
-      ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#000000';
-      ctx.fillText(vertexLabels[i], point.x, point.y - 15);
-      ctx.fillStyle = '#ffffff';
-    });
-
-    // Draw labels for dimensions in the selected unit
-    ctx.fillStyle = '#000000';
-    ctx.font = `${Math.min(canvasWidth, canvasHeight) * 0.04}px Poppins`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    const labelOffset = padding * 0.5;
-
-    // Front width (A to B)
-    const midAB = { x: (points[0].x + points[1].x) / 2, y: (points[0].y + points[1].y) / 2 };
-    const angleAB = Math.atan2(points[1].y - points[0].y, points[1].x - points[0].x);
-    ctx.save();
-    ctx.translate(midAB.x, midAB.y - labelOffset);
-    ctx.rotate(angleAB);
-    ctx.fillText(`${width1.toFixed(2)} ${unitSymbols[unit]}`, 0, 0);
-    ctx.restore();
-
-    // Back width (D to C)
-    const midDC = { x: (points[3].x + points[2].x) / 2, y: (points[3].y + points[2].y) / 2 };
-    const angleDC = Math.atan2(points[2].y - points[3].y, points[2].x - points[3].x);
-    ctx.save();
-    ctx.translate(midDC.x, midDC.y + labelOffset);
-    ctx.rotate(angleDC);
-    ctx.fillText(`${width2.toFixed(2)} ${unitSymbols[unit]}`, 0, 0);
-    ctx.restore();
-
-    // Left height (A to D)
-    const midAD = { x: (points[0].x + points[3].x) / 2, y: (points[0].y + points[3].y) / 2 };
-    const angleAD = Math.atan2(points[3].y - points[0].y, points[3].x - points[0].x);
-    ctx.save();
-    ctx.translate(midAD.x - labelOffset, midAD.y);
-    ctx.rotate(angleAD - Math.PI / 2);
-    ctx.fillText(`${height1.toFixed(2)} ${unitSymbols[unit]}`, 0, 0);
-    ctx.restore();
-
-    // Right height (B to C)
-    const midBC = { x: (points[1].x + points[2].x) / 2, y: (points[1].y + points[2].y) / 2 };
-    const angleBC = Math.atan2(points[2].y - points[1].y, points[2].x - points[1].x);
-    ctx.save();
-    ctx.translate(midBC.x + labelOffset, midBC.y);
-    ctx.rotate(angleBC + Math.PI / 2);
-    ctx.fillText(`${height2.toFixed(2)} ${unitSymbols[unit]}`, 0, 0);
-    ctx.restore();
-
-    // Draw "OPEN PLOT" text in the center with a background for visibility
-    const centerX = (points[0].x + points[1].x + points[2].x + points[3].x) / 4;
-    const centerY = (points[0].y + points[1].y + points[2].y + points[3].y) / 4;
-    ctx.font = `${Math.min(canvasWidth, canvasHeight) * 0.05}px Poppins`;
-    const text = 'OPEN PLOT';
-    const textWidth = ctx.measureText(text).width;
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-    ctx.fillRect(centerX - textWidth / 2 - 5, centerY - 10, textWidth + 10, 20);
-    ctx.fillStyle = '#000000';
-    ctx.fillText(text, centerX, centerY);
-  }
-
-  // Unit Converter Logic
-  const conversionFactors = {
-    'sqft': {
-      'sqm': 0.092903,
-      'gaj': 0.111111,
-      'acre': 0.000022957,
-      'hectare': 0.0000092903,
-      'sqyard': 0.111111,
-      'cent': 0.0022957
-    },
-    'sqm': {
+    // Conversion factors for area (from square meters)
+    const areaConversionFactors = {
+      'sqm': 1,
       'sqft': 10.7639,
+      'sqyard': 1.19599,
       'gaj': 1.19599,
+      'cent': 0.0247105,
+      'katha': 0.00747494,
+      'guntha': 0.00988422,
+      'bigha': 0.000398406,
       'acre': 0.000247105,
-      'hectare': 0.0001,
-      'cent': 0.0247105
-    },
-    'acre': {
-      'hectare': 0.404686,
-      'sqft': 43560,
-      'sqm': 4046.86,
-      'bigha': 1.613,
-      'cent': 100
-    },
-    'hectare': {
-      'sqm': 10000,
-      'sqft': 107639,
-      'acre': 2.47105,
-      'bigha': 3.986,
-      'cent': 247.105
-    },
-    'gaj': {
-      'sqft': 9,
-      'sqm': 0.836127,
-      'bigha': 0.000330579,
-      'sqyard': 1,
-      'biswa': 0.00661158
-    },
-    'bigha': {
-      'sqft': 27000,
-      'gaj': 3025,
-      'acre': 0.619834,
-      'hectare': 0.251,
-      'katha': 20
-    },
-    'sqyard': {
-      'sqm': 0.836127,
-      'acre': 0.000206612,
-      'gaj': 1,
-      'cent': 0.0206612
-    },
-    'cent': {
-      'sqft': 435.6,
-      'sqm': 40.4686,
-      'acre': 0.01,
-      'hectare': 0.00404686,
-      'sqyard': 48.4
-    },
-    'katha': {
-      'sqft': 1361.25,
-      'gaj': 151.25,
-      'acre': 0.03125,
-      'bigha': 0.05,
-      'decimal': 3.125
-    },
-    'guntha': {
-      'sqft': 1089,
-      'sqm': 101.171,
-      'acre': 0.025,
-      'bigha': 0.0403226,
-      'katha': 0.806452
-    },
-    'meter': { 'feet': 3.28084 },
-    'feet': { 'meter': 0.3048 },
-    'inches': { 'mm': 25.4 },
-    'mm': { 'inches': 0.0393701 },
-    'meter': { 'cm': 100 },
-    'cm': { 'meter': 0.01 },
-    'cubicfeet': { 'cubicmeter': 0.0283168 },
-    'cubicmeter': { 'cubicfeet': 35.3147 }
-  };
+      'hectare': 0.0001
+    };
 
-  const unitGroups = {
-    'area': ['sqft', 'sqm', 'acre', 'hectare', 'gaj', 'bigha', 'sqyard', 'cent', 'katha', 'guntha'],
-    'length': ['meter', 'feet', 'inches', 'mm', 'cm'],
-    'volume': ['cubicfeet', 'cubicmeter']
-  };
+    // Area unit symbols for display
+    const areaUnitSymbols = {
+      'sqm': 'sqm',
+      'sqft': 'sqft',
+      'sqyard': 'sq yard',
+      'gaj': 'gaj',
+      'cent': 'cent',
+      'katha': 'katha',
+      'guntha': 'guntha',
+      'bigha': 'bigha',
+      'acre': 'acre',
+      'hectare': 'hectare'
+    };
 
-  function updateToUnits() {
-    const fromUnit = document.getElementById('fromUnit').value;
-    const toUnitSelect = document.getElementById('toUnit');
-    toUnitSelect.innerHTML = '';
+    // Function to choose the appropriate area unit based on size (in square meters)
+    function chooseAreaUnit(areaInSqm) {
+      if (areaInSqm < 50) return 'sqm';
+      else if (areaInSqm < 500) return 'sqft';
+      else if (areaInSqm < 1000) return 'gaj';
+      else if (areaInSqm < 1500) return 'sqyard';
+      else if (areaInSqm < 3000) return 'katha';
+      else if (areaInSqm < 5000) return 'guntha';
+      else if (areaInSqm < 8000) return 'bigha';
+      else if (areaInSqm < 20000) return 'cent';
+      else if (areaInSqm < 100000) return 'acre';
+      else return 'hectare';
+    }
 
-    let group;
-    for (const g in unitGroups) {
-      if (unitGroups[g].includes(fromUnit)) {
-        group = g;
-        break;
+    // Function to check if the quadrilateral is self-intersecting
+    function isSelfIntersecting(points) {
+      function doLinesIntersect(p1, p2, p3, p4) {
+        const det = (p2.x - p1.x) * (p4.y - p3.y) - (p2.y - p1.y) * (p4.x - p3.x);
+        if (det === 0) return false;
+        const t = ((p3.x - p1.x) * (p4.y - p3.y) - (p3.y - p1.y) * (p4.x - p3.x)) / det;
+        const u = -((p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x)) / det;
+        return t > 0 && t < 1 && u > 0 && u < 1;
+      }
+      if (doLinesIntersect(points[0], points[1], points[2], points[3])) return true;
+      if (doLinesIntersect(points[0], points[3], points[1], points[2])) return true;
+      return false;
+    }
+
+    // Land Plot Drawer and Area Calculator
+    function drawPlotAndCalculateArea(event) {
+      try {
+        event.preventDefault();
+        const unit = document.getElementById('unit').value;
+        const preferredAreaUnit = document.getElementById('preferredAreaUnit').value;
+        const width1 = parseFloat(document.getElementById('width1').value);
+        const width2 = parseFloat(document.getElementById('width2').value);
+        const height1 = parseFloat(document.getElementById('height1').value);
+        const height2 = parseFloat(document.getElementById('height2').value);
+
+        const warningDiv = document.getElementById('warning-message');
+        warningDiv.textContent = '';
+
+        if ([width1, width2, height1, height2].some(val => isNaN(val) || val <= 0)) {
+          warningDiv.textContent = 'Please enter valid positive numbers for all dimensions.';
+          document.getElementById('area-result').textContent = '';
+          const canvas = document.getElementById('plotCanvas');
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          return;
+        }
+
+        const factor = lengthConversionFactors[unit];
+        const width1Meters = width1 * factor;
+        const width2Meters = width2 * factor;
+        const height1Meters = height1 * factor;
+        const height2Meters = height2 * factor;
+
+        const pointsMeters = [
+          { x: 0, y: 0 },
+          { x: width1Meters, y: 0 },
+          { x: width2Meters, y: height2Meters },
+          { x: 0, y: height1Meters }
+        ];
+
+        if (isSelfIntersecting(pointsMeters)) {
+          warningDiv.textContent = 'The plot dimensions form a self-intersecting shape. Please adjust the values.';
+          document.getElementById('area-result').textContent = '';
+          const canvas = document.getElementById('plotCanvas');
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          return;
+        }
+
+        function triangleArea(p1, p2, p3) {
+          return Math.abs(
+            (p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2
+          );
+        }
+        const areaABC = triangleArea(pointsMeters[0], pointsMeters[1], pointsMeters[2]);
+        const areaADC = triangleArea(pointsMeters[0], pointsMeters[3], pointsMeters[2]);
+        const areaInSqm = areaABC + areaADC;
+
+        const areaUnit = preferredAreaUnit === 'auto' ? chooseAreaUnit(areaInSqm) : preferredAreaUnit;
+        const areaValue = areaInSqm * areaConversionFactors[areaUnit];
+        document.getElementById('area-result').textContent = `Area: ${areaValue.toFixed(2)} ${areaUnitSymbols[areaUnit]}`;
+
+        const canvas = document.getElementById('plotCanvas');
+        const containerWidth = document.querySelector('.container').offsetWidth - 60;
+        canvas.width = Math.min(400, containerWidth);
+        canvas.height = canvas.width * 0.75;
+
+        const ctx = canvas.getContext('2d');
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+        const minX = Math.min(...pointsMeters.map(p => p.x));
+        const maxX = Math.max(...pointsMeters.map(p => p.x));
+        const minY = Math.min(...pointsMeters.map(p => p.y));
+        const maxY = Math.max(...pointsMeters.map(p => p.y));
+        const plotWidthMeters = maxX - minX;
+        const plotHeightMeters = maxY - minY;
+        const maxDimension = Math.max(plotWidthMeters, plotHeightMeters);
+
+        const padding = Math.min(canvasWidth, canvasHeight) * 0.15;
+        const scale = Math.min((canvasWidth - padding * 2) / maxDimension, (canvasHeight - padding * 2) / maxDimension);
+
+        const points = pointsMeters.map(p => ({
+          x: (p.x - minX) * scale + padding,
+          y: (p.y - minY) * scale + padding
+        }));
+
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+          ctx.lineTo(points[i].x, points[i].y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = '#ff0000';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        const innerOffset = 10 / scale;
+        const innerPoints = pointsMeters.map(p => ({
+          x: (p.x - minX) * scale + padding + innerOffset,
+          y: (p.y - minY) * scale + padding + innerOffset
+        }));
+        ctx.beginPath();
+        ctx.moveTo(innerPoints[0].x, innerPoints[0].y);
+        for (let i = 1; i < innerPoints.length; i++) {
+          ctx.lineTo(innerPoints[i].x, innerPoints[i].y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        const vertexLabels = ['A', 'B', 'C', 'D'];
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `${Math.min(canvasWidth, canvasHeight) * 0.04}px Poppins`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        points.forEach((point, i) => {
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#000000';
+          ctx.fillText(vertexLabels[i], point.x, point.y - 15);
+          ctx.fillStyle = '#ffffff';
+        });
+
+        ctx.fillStyle = '#000000';
+        ctx.font = `${Math.min(canvasWidth, canvasHeight) * 0.04}px Poppins`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const labelOffset = padding * 0.5;
+
+        const midAB = { x: (points[0].x + points[1].x) / 2, y: (points[0].y + points[1].y) / 2 };
+        const angleAB = Math.atan2(points[1].y - points[0].y, points[1].x - points[0].x);
+        ctx.save();
+        ctx.translate(midAB.x, midAB.y - labelOffset);
+        ctx.rotate(angleAB);
+        ctx.fillText(`${width1.toFixed(2)} ${unitSymbols[unit]}`, 0, 0);
+        ctx.restore();
+
+        const midDC = { x: (points[3].x + points[2].x) / 2, y: (points[3].y + points[2].y) / 2 };
+        const angleDC = Math.atan2(points[2].y - points[3].y, points[2].x - points[3].x);
+        ctx.save();
+        ctx.translate(midDC.x, midDC.y + labelOffset);
+        ctx.rotate(angleDC);
+        ctx.fillText(`${width2.toFixed(2)} ${unitSymbols[unit]}`, 0, 0);
+        ctx.restore();
+
+        const midAD = { x: (points[0].x + points[3].x) / 2, y: (points[0].y + points[3].y) / 2 };
+        const angleAD = Math.atan2(points[3].y - points[0].y, points[3].x - points[0].x);
+        ctx.save();
+        ctx.translate(midAD.x - labelOffset, midAD.y);
+        ctx.rotate(angleAD - Math.PI / 2);
+        ctx.fillText(`${height1.toFixed(2)} ${unitSymbols[unit]}`, 0, 0);
+        ctx.restore();
+
+        const midBC = { x: (points[1].x + points[2].x) / 2, y: (points[1].y + points[2].y) / 2 };
+        const angleBC = Math.atan2(points[2].y - points[1].y, points[2].x - points[1].x);
+        ctx.save();
+        ctx.translate(midBC.x + labelOffset, midBC.y);
+        ctx.rotate(angleBC + Math.PI / 2);
+        ctx.fillText(`${height2.toFixed(2)} ${unitSymbols[unit]}`, 0, 0);
+        ctx.restore();
+
+        const centerX = (points[0].x + points[1].x + points[2].x + points[3].x) / 4;
+        const centerY = (points[0].y + points[1].y + points[2].y + points[3].y) / 4;
+        ctx.font = `${Math.min(canvasWidth, canvasHeight) * 0.05}px Poppins`;
+        const text = 'OPEN PLOT';
+        const textWidth = ctx.measureText(text).width;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.fillRect(centerX - textWidth / 2 - 5, centerY - 10, textWidth + 10, 20);
+        ctx.fillStyle = '#000000';
+        ctx.fillText(text, centerX, centerY);
+      } catch (e) {
+        console.error('Error in drawPlotAndCalculateArea:', e);
+        document.getElementById('warning-message').textContent = 'An error occurred while drawing the plot. Please check the console for details.';
       }
     }
 
-    unitGroups[group].forEach(unit => {
-      if (unit !== fromUnit && conversionFactors[fromUnit][unit] !== undefined) {
-        const option = document.createElement('option');
-        option.value = unit;
-        option.textContent = unit.charAt(0).toUpperCase() + unit.slice(1).replace(/([A-Z])/g, ' $1');
-        toUnitSelect.appendChild(option);
+    // Unit Converter Logic
+    const conversionFactors = {
+      'sqft': {
+        'sqm': 0.092903,
+        'gaj': 0.111111,
+        'acre': 0.000022957,
+        'hectare': 0.0000092903,
+        'sqyard': 0.111111,
+        'cent': 0.0022957
+      },
+      'sqm': {
+        'sqft': 10.7639,
+        'gaj': 1.19599,
+        'acre': 0.000247105,
+        'hectare': 0.0001,
+        'cent': 0.0247105
+      },
+      'acre': {
+        'hectare': 0.404686,
+        'sqft': 43560,
+        'sqm': 4046.86,
+        'bigha': 1.613,
+        'cent': 100
+      },
+      'hectare': {
+        'sqm': 10000,
+        'sqft': 107639,
+        'acre': 2.47105,
+        'bigha': 3.986,
+        'cent': 247.105
+      },
+      'gaj': {
+        'sqft': 9,
+        'sqm': 0.836127,
+        'bigha': 0.000330579,
+        'sqyard': 1,
+        'biswa': 0.00661158
+      },
+      'bigha': {
+        'sqft': 27000,
+        'gaj': 3025,
+        'acre': 0.619834,
+        'hectare': 0.251,
+        'katha': 20
+      },
+      'sqyard': {
+        'sqm': 0.836127,
+        'acre': 0.000206612,
+        'gaj': 1,
+        'cent': 0.0206612
+      },
+      'cent': {
+        'sqft': 435.6,
+        'sqm': 40.4686,
+        'acre': 0.01,
+        'hectare': 0.00404686,
+        'sqyard': 48.4
+      },
+      'katha': {
+        'sqft': 1361.25,
+        'gaj': 151.25,
+        'acre': 0.03125,
+        'bigha': 0.05,
+        'decimal': 3.125
+      },
+      'guntha': {
+        'sqft': 1089,
+        'sqm': 101.171,
+        'acre': 0.025,
+        'bigha': 0.0403226,
+        'katha': 0.806452
+      },
+      'meter': { 'feet': 3.28084 },
+      'feet': { 'meter': 0.3048 },
+      'inches': { 'mm': 25.4 },
+      'mm': { 'inches': 0.0393701 },
+      'meter': { 'cm': 100 },
+      'cm': { 'meter': 0.01 },
+      'cubicfeet': { 'cubicmeter': 0.0283168 },
+      'cubicmeter': { 'cubicfeet': 35.3147 }
+    };
+
+    const unitGroups = {
+      'area': ['sqft', 'sqm', 'acre', 'hectare', 'gaj', 'bigha', 'sqyard', 'cent', 'katha', 'guntha'],
+      'length': ['meter', 'feet', 'inches', 'mm', 'cm'],
+      'volume': ['cubicfeet', 'cubicmeter']
+    };
+
+    function updateToUnits() {
+      try {
+        const fromUnit = document.getElementById('fromUnit').value;
+        const toUnitSelect = document.getElementById('toUnit');
+        toUnitSelect.innerHTML = '';
+
+        let group;
+        for (const g in unitGroups) {
+          if (unitGroups[g].includes(fromUnit)) {
+            group = g;
+            break;
+          }
+        }
+
+        unitGroups[group].forEach(unit => {
+          if (unit !== fromUnit && conversionFactors[fromUnit][unit] !== undefined) {
+            const option = document.createElement('option');
+            option.value = unit;
+            option.textContent = unit.charAt(0).toUpperCase() + unit.slice(1).replace(/([A-Z])/g, ' $1');
+            toUnitSelect.appendChild(option);
+          }
+        });
+
+        if (toUnitSelect.options.length > 0) {
+          toUnitSelect.options[0].selected = true;
+        }
+      } catch (e) {
+        console.error('Error in updateToUnits:', e);
+        document.getElementById('converter-result').textContent = 'Error updating units. Please check the console.';
       }
-    });
-
-    if (toUnitSelect.options.length > 0) {
-      toUnitSelect.options[0].selected = true;
-    }
-  }
-
-  function convertUnits(event) {
-    event.preventDefault();
-    const fromUnit = document.getElementById('fromUnit').value;
-    const toUnit = document.getElementById('toUnit').value;
-    const value = parseFloat(document.getElementById('value').value);
-
-    if (isNaN(value) || value < 0) {
-      document.getElementById('converter-result').textContent = 'Please enter a valid positive number.';
-      return;
     }
 
-    const factor = conversionFactors[fromUnit][toUnit];
-    if (!factor) {
-      document.getElementById('converter-result').textContent = 'Conversion not available.';
-      return;
+    function convertUnits(event) {
+      try {
+        event.preventDefault();
+        const fromUnit = document.getElementById('fromUnit').value;
+        const toUnit = document.getElementById('toUnit').value;
+        const value = parseFloat(document.getElementById('value').value);
+
+        if (isNaN(value) || value < 0) {
+          document.getElementById('converter-result').textContent = 'Please enter a valid positive number.';
+          return;
+        }
+
+        const factor = conversionFactors[fromUnit][toUnit];
+        if (!factor) {
+          document.getElementById('converter-result').textContent = 'Conversion not available.';
+          return;
+        }
+
+        const result = (value * factor).toFixed(4);
+        document.getElementById('converter-result').textContent = `${value} ${fromUnit} = ${result} ${toUnit}`;
+      } catch (e) {
+        console.error('Error in convertUnits:', e);
+        document.getElementById('converter-result').textContent = 'Error during conversion. Please check the console.';
+      }
     }
 
-    const result = (value * factor).toFixed(4);
-    document.getElementById('converter-result').textContent = `${value} ${fromUnit} = ${result} ${toUnit}`;
-  }
-
-  window.onload = function() {
-    updateToUnits();
-    // Set default values for the plot to match the user's calculated area
-    document.getElementById('width1').value = 15;    // Front width in meters
-    document.getElementById('width2').value = 13.56; // Back width in meters
-    document.getElementById('height1').value = 10;   // Left height in meters
-    document.getElementById('height2').value = 10;   // Right height in meters
-    document.getElementById('unit').value = 'meter'; // Set unit to meters
-    document.getElementById('preferredAreaUnit').value = 'sqm'; // Set to sqm to verify 142.80
-    drawPlotAndCalculateArea({ preventDefault: () => {} }); // Initial draw with default values
-  };
-</script>
+    window.onload = function() {
+      try {
+        updateToUnits();
+        document.getElementById('width1').value = 10;
+        document.getElementById('width2').value = 10;
+        document.getElementById('height1').value = 10;
+        document.getElementById('height2').value = 10;
+        document.getElementById('unit').value = 'meter';
+        document.getElementById('preferredAreaUnit').value = 'sqm';
+        drawPlotAndCalculateArea({ preventDefault: () => {} });
+      } catch (e) {
+        console.error('Error in window.onload:', e);
+        document.getElementById('warning-message').textContent = 'Error initializing the app. Please check the console.';
+      }
+    };
+  </script>
 </body>
 </html>
