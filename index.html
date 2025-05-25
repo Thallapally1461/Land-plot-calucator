@@ -662,11 +662,13 @@
 
   window.onload = function() {
     updateToUnits();
-    // Set default values for the plot
-    document.getElementById('width1').value = 10;
-    document.getElementById('width2').value = 10;
-    document.getElementById('height1').value = 10;
-    document.getElementById('height2').value = 10;
+    // Set default values for the plot to match the user's calculated area
+    document.getElementById('width1').value = 15;    // Front width in meters
+    document.getElementById('width2').value = 13.56; // Back width in meters
+    document.getElementById('height1').value = 10;   // Left height in meters
+    document.getElementById('height2').value = 10;   // Right height in meters
+    document.getElementById('unit').value = 'meter'; // Set unit to meters
+    document.getElementById('preferredAreaUnit').value = 'sqm'; // Set to sqm to verify 142.80
     drawPlotAndCalculateArea({ preventDefault: () => {} }); // Initial draw with default values
   };
 </script>
