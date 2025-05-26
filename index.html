@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,7 +39,6 @@
     .tab.active:hover {
       background: #d4b40c;
     }
-    /* Material-UI-like input styling */
     .mui-input {
       position: relative;
       margin-top: 1.5rem;
@@ -84,6 +84,7 @@
       height: auto;
       aspect-ratio: 4 / 3;
       border: 1px solid #ccc;
+      display: block;
     }
   </style>
 </head>
@@ -93,10 +94,10 @@
       Land Plot Drawer & Area Calculator
     </h1>
     <div class="flex justify-center mb-6">
-      <div class="tab px-4 py-2 mx-2 rounded-full font-semibold bg-gray-700 active" onclick="showSection('area-section')">
+      <div class="tab px-4 py-2 mx-2 rounded-full font-semibold bg-gray-700 active" onclick="showSection('area-section', event)">
         Land Plot
       </div>
-      <div class="tab px-4 py-2 mx-2 rounded-full font-semibold bg-gray-700" onclick="showSection('converter-section')">
+      <div class="tab px-4 py-2 mx-2 rounded-full font-semibold bg-gray-700" onclick="showSection('converter-section', event)">
         Unit Converter
       </div>
     </div>
@@ -106,18 +107,16 @@
       <form id="areaForm" onsubmit="drawPlotAndCalculateArea(event)" novalidate class="space-y-4">
         <div class="mui-input">
           <label for="unit">Unit of Measurement</label>
-          <select id="unit" name="unit" onchange="drawPlotAndCalculateArea({ preventDefault: () => {} })">
+          <select id="unit" name="unit">
             <option value="meter">Meters (m)</option>
             <option value="feet">Feet (ft)</option>
             <option value="yard">Yards (yd)</option>
-            <option value="kilometer">Kilometers (km)</option>
-            <option value="mile">Miles (mi)</option>
           </select>
         </div>
 
         <div class="mui-input">
           <label for="preferredAreaUnit">Preferred Area Unit</label>
-          <select id="preferredAreaUnit" name="preferredAreaUnit" onchange="drawPlotAndCalculateArea({ preventDefault: () => {} })">
+          <select id="preferredAreaUnit" name="preferredAreaUnit">
             <option value="auto">Auto (Recommended)</option>
             <option value="sqm">Square Meter (sqm)</option>
             <option value="sqft">Square Feet (sqft)</option>
@@ -142,7 +141,6 @@
             step="any"
             placeholder="Enter front width"
             required
-            oninput="drawPlotAndCalculateArea({ preventDefault: () => {} })"
           />
         </div>
 
@@ -156,7 +154,6 @@
             step="any"
             placeholder="Enter back width"
             required
-            oninput="drawPlotAndCalculateArea({ preventDefault: () => {} })"
           />
         </div>
 
@@ -170,7 +167,6 @@
             step="any"
             placeholder="Enter left height"
             required
-            oninput="drawPlotAndCalculateArea({ preventDefault: () => {} })"
           />
         </div>
 
@@ -184,7 +180,6 @@
             step="any"
             placeholder="Enter right height"
             required
-            oninput="drawPlotAndCalculateArea({ preventDefault: () => {} })"
           />
         </div>
 
@@ -206,10 +201,10 @@
 
     <!-- Unit Converter Section -->
     <div id="converter-section" class="hidden">
-      <form id="converterForm" onsubmit="convertUnits(event)" novalidate class="space-y-4">
+      <form id="converterForm" novalidate class="space-y-4">
         <div class="mui-input">
           <label for="fromUnit">From Unit</label>
-          <select id="fromUnit" onchange="updateToUnits()">
+          <select id="fromUnit">
             <option value="sqft">Square Feet (sqft)</option>
             <option value="sqm">Square Meter (sqm)</option>
             <option value="acre">Acre</option>
@@ -257,14 +252,14 @@
       </form>
       <div class="text-yellow-400 font-semibold text-lg mt-4 text-center" id="converter-result"></div>
       <div class="text-gray-400 text-sm mt-4 text-left">
-        <p><strong>Note:</strong> Select the units to convert between various area and length measurements.</p>
+        <p><strong>Note:</strong> Select units to convert between area, length, or volume measurements. Bigha and katha are based on common Indian standards (1 bigha ≈ 0.33057851 acres, 1 katha ≈ 720 sqft); values may vary by region.</p>
       </div>
     </div>
   </div>
 
   <script>
     // Show/hide sections
-    function showSection(sectionId) {
+    function showSection(sectionId, event) {
       try {
         document.getElementById('area-section').classList.add('hidden');
         document.getElementById('converter-section').classList.add('hidden');
@@ -278,48 +273,44 @@
 
     // Conversion factors to meters (for side lengths)
     const lengthConversionFactors = {
-      'meter': 1,
-      'feet': 0.3048,
-      'yard': 0.9144,
-      'kilometer': 1000,
-      'mile': 1609.34
+      meter: 1,
+      feet: 0.3048,
+      yard: 0.9144,
     };
 
     // Unit symbols for side length display
     const unitSymbols = {
-      'meter': 'm',
-      'feet': 'ft',
-      'yard': 'yd',
-      'kilometer': 'km',
-      'mile': 'mi'
+      meter: 'm',
+      feet: 'ft',
+      yard: 'yd',
     };
 
     // Conversion factors for area (from square meters)
     const areaConversionFactors = {
-      'sqm': 1,
-      'sqft': 10.7639,
-      'sqyard': 1.19599,
-      'gaj': 1.19599,
-      'cent': 0.0247105,
-      'katha': 0.00747494,
-      'guntha': 0.00988422,
-      'bigha': 0.000398406,
-      'acre': 0.000247105,
-      'hectare': 0.0001
+      sqm: 1,
+      sqft: 10.763910417,
+      sqyard: 1.195990046,
+      gaj: 1.195990046,
+      cent: 0.024710538147,
+      katha: 0.014949875256,
+      guntha: 0.009884215259,
+      bigha: 0.0007474937626,
+      acre: 0.00024710538147,
+      hectare: 0.0001,
     };
 
     // Area unit symbols for display
     const areaUnitSymbols = {
-      'sqm': 'sqm',
-      'sqft': 'sqft',
-      'sqyard': 'sq yard',
-      'gaj': 'gaj',
-      'cent': 'cent',
-      'katha': 'katha',
-      'guntha': 'guntha',
-      'bigha': 'bigha',
-      'acre': 'acre',
-      'hectare': 'hectare'
+      sqm: 'sqm',
+      sqft: 'sqft',
+      sqyard: 'sq yard',
+      gaj: 'gaj',
+      cent: 'cent',
+      katha: 'katha',
+      guntha: 'guntha',
+      bigha: 'bigha',
+      acre: 'acre',
+      hectare: 'hectare',
     };
 
     // Function to choose the appropriate area unit based on size (in square meters)
@@ -356,8 +347,8 @@
         event.preventDefault();
         const unit = document.getElementById('unit').value;
         const preferredAreaUnit = document.getElementById('preferredAreaUnit').value;
-        const width1 = parseFloat(document.getElementById('width1').value);
-        const width2 = parseFloat(document.getElementById('width2').value);
+        const width1 = parseFloat(document.getElementById('width1').value); // Front width, to be at top (DC)
+        const width2 = parseFloat(document.getElementById('width2').value); // Back width, to be at bottom (AB)
         const height1 = parseFloat(document.getElementById('height1').value);
         const height2 = parseFloat(document.getElementById('height2').value);
 
@@ -380,10 +371,10 @@
         const height2Meters = height2 * factor;
 
         const pointsMeters = [
-          { x: 0, y: 0 },
-          { x: width1Meters, y: 0 },
-          { x: width2Meters, y: height2Meters },
-          { x: 0, y: height1Meters }
+          { x: 0, y: 0 }, // A
+          { x: width2Meters, y: 0 }, // B: Use width2 for bottom edge (AB)
+          { x: width1Meters, y: height2Meters }, // C: Use width1 for top edge (DC)
+          { x: 0, y: height1Meters }, // D
         ];
 
         if (isSelfIntersecting(pointsMeters)) {
@@ -395,14 +386,10 @@
           return;
         }
 
-        function triangleArea(p1, p2, p3) {
-          return Math.abs(
-            (p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2
-          );
-        }
-        const areaABC = triangleArea(pointsMeters[0], pointsMeters[1], pointsMeters[2]);
-        const areaADC = triangleArea(pointsMeters[0], pointsMeters[3], pointsMeters[2]);
-        const areaInSqm = areaABC + areaADC;
+        // Calculate area using average width * average height
+        const avgWidthMeters = (width1Meters + width2Meters) / 2;
+        const avgHeightMeters = (height1Meters + height2Meters) / 2;
+        const areaInSqm = avgWidthMeters * avgHeightMeters;
 
         const areaUnit = preferredAreaUnit === 'auto' ? chooseAreaUnit(areaInSqm) : preferredAreaUnit;
         const areaValue = areaInSqm * areaConversionFactors[areaUnit];
@@ -432,7 +419,7 @@
 
         const points = pointsMeters.map(p => ({
           x: (p.x - minX) * scale + padding,
-          y: (p.y - minY) * scale + padding
+          y: (p.y - minY) * scale + padding,
         }));
 
         ctx.beginPath();
@@ -448,7 +435,7 @@
         const innerOffset = 10 / scale;
         const innerPoints = pointsMeters.map(p => ({
           x: (p.x - minX) * scale + padding + innerOffset,
-          y: (p.y - minY) * scale + padding + innerOffset
+          y: (p.y - minY) * scale + padding + innerOffset,
         }));
         ctx.beginPath();
         ctx.moveTo(innerPoints[0].x, innerPoints[0].y);
@@ -486,7 +473,7 @@
         ctx.save();
         ctx.translate(midAB.x, midAB.y - labelOffset);
         ctx.rotate(angleAB);
-        ctx.fillText(`${width1.toFixed(2)} ${unitSymbols[unit]}`, 0, 0);
+        ctx.fillText(`${width2.toFixed(2)} ${unitSymbols[unit]}`, 0, 0);
         ctx.restore();
 
         const midDC = { x: (points[3].x + points[2].x) / 2, y: (points[3].y + points[2].y) / 2 };
@@ -494,7 +481,7 @@
         ctx.save();
         ctx.translate(midDC.x, midDC.y + labelOffset);
         ctx.rotate(angleDC);
-        ctx.fillText(`${width2.toFixed(2)} ${unitSymbols[unit]}`, 0, 0);
+        ctx.fillText(`${width1.toFixed(2)} ${unitSymbols[unit]}`, 0, 0);
         ctx.restore();
 
         const midAD = { x: (points[0].x + points[3].x) / 2, y: (points[0].y + points[3].y) / 2 };
@@ -524,96 +511,58 @@
         ctx.fillText(text, centerX, centerY);
       } catch (e) {
         console.error('Error in drawPlotAndCalculateArea:', e);
-        document.getElementById('warning-message').textContent = 'An error occurred while drawing the plot. Please check the console for details.';
+        document.getElementById('warning-message').textContent = 'An error occurred while drawing the plot. Please check the console.';
       }
     }
 
     // Unit Converter Logic
-    const conversionFactors = {
-      'sqft': {
-        'sqm': 0.092903,
-        'gaj': 0.111111,
-        'acre': 0.000022957,
-        'hectare': 0.0000092903,
-        'sqyard': 0.111111,
-        'cent': 0.0022957
-      },
-      'sqm': {
-        'sqft': 10.7639,
-        'gaj': 1.19599,
-        'acre': 0.000247105,
-        'hectare': 0.0001,
-        'cent': 0.0247105
-      },
-      'acre': {
-        'hectare': 0.404686,
-        'sqft': 43560,
-        'sqm': 4046.86,
-        'bigha': 1.613,
-        'cent': 100
-      },
-      'hectare': {
-        'sqm': 10000,
-        'sqft': 107639,
-        'acre': 2.47105,
-        'bigha': 3.986,
-        'cent': 247.105
-      },
-      'gaj': {
-        'sqft': 9,
-        'sqm': 0.836127,
-        'bigha': 0.000330579,
-        'sqyard': 1,
-        'biswa': 0.00661158
-      },
-      'bigha': {
-        'sqft': 27000,
-        'gaj': 3025,
-        'acre': 0.619834,
-        'hectare': 0.251,
-        'katha': 20
-      },
-      'sqyard': {
-        'sqm': 0.836127,
-        'acre': 0.000206612,
-        'gaj': 1,
-        'cent': 0.0206612
-      },
-      'cent': {
-        'sqft': 435.6,
-        'sqm': 40.4686,
-        'acre': 0.01,
-        'hectare': 0.00404686,
-        'sqyard': 48.4
-      },
-      'katha': {
-        'sqft': 1361.25,
-        'gaj': 151.25,
-        'acre': 0.03125,
-        'bigha': 0.05,
-        'decimal': 3.125
-      },
-      'guntha': {
-        'sqft': 1089,
-        'sqm': 101.171,
-        'acre': 0.025,
-        'bigha': 0.0403226,
-        'katha': 0.806452
-      },
-      'meter': { 'feet': 3.28084 },
-      'feet': { 'meter': 0.3048 },
-      'inches': { 'mm': 25.4 },
-      'mm': { 'inches': 0.0393701 },
-      'meter': { 'cm': 100 },
-      'cm': { 'meter': 0.01 },
-      'cubicfeet': { 'cubicmeter': 0.0283168 },
-      'cubicmeter': { 'cubicfeet': 35.3147 }
+    const unitGroups = {
+      area: ['sqft', 'sqm', 'acre', 'hectare', 'gaj', 'sqyard', 'cent', 'katha', 'guntha', 'bigha'],
+      length: ['meter', 'feet', 'inches', 'mm', 'cm'],
+      volume: ['cubicfeet', 'cubicmeter'],
     };
 
-    const unitGroups = {
-      'area': ['sqft', 'sqm', 'acre', 'hectare', 'gaj', 'bigha', 'sqyard', 'cent', 'katha', 'guntha'],
-      'length': ['meter', 'feet', 'inches', 'mm', 'cm'],
-      'volume': ['cubicfeet', 'cubicmeter']
+    const baseUnitFactors = {
+      // Area: to square meters
+      sqft: 0.09290304,
+      sqm: 1,
+      acre: 4046.8564224,
+      hectare: 10000,
+      gaj: 0.83612736,
+      sqyard: 0.83612736,
+      cent: 40.468564,
+      katha: 66.890243,
+      guntha: 101.171389,
+      bigha: 1337.804878,
+      // Length: to meters
+      meter: 1,
+      feet: 0.3048,
+      inches: 0.0254,
+      mm: 0.001,
+      cm: 0.01,
+      // Volume: to cubic meters
+      cubicfeet: 0.028316846,
+      cubicmeter: 1,
+    };
+
+    const unitDisplayNames = {
+      sqft: 'Square Feet (sqft)',
+      sqm: 'Square Meter (sqm)',
+      acre: 'Acre',
+      hectare: 'Hectare',
+      gaj: 'Gaj',
+      sqyard: 'Square Yard (sq yard)',
+      cent: 'Cent',
+      katha: 'Katha',
+      guntha: 'Guntha',
+      bigha: 'Bigha',
+      meter: 'Meter',
+      feet: 'Feet',
+      inches: 'Inches',
+      mm: 'Millimeter (mm)',
+      cm: 'Centimeter (cm)',
+      cubicfeet: 'Cubic Feet',
+      cubicmeter: 'Cubic Meter',
     };
 
     function updateToUnits() {
@@ -630,17 +579,24 @@
           }
         }
 
+        if (!group) {
+          document.getElementById('converter-result').textContent = 'Invalid source unit selected.';
+          return;
+        }
+
         unitGroups[group].forEach(unit => {
-          if (unit !== fromUnit && conversionFactors[fromUnit][unit] !== undefined) {
+          if (unit !== fromUnit) {
             const option = document.createElement('option');
             option.value = unit;
-            option.textContent = unit.charAt(0).toUpperCase() + unit.slice(1).replace(/([A-Z])/g, ' $1');
+            option.textContent = unitDisplayNames[unit] || (unit.charAt(0).toUpperCase() + unit.slice(1).replace(/([A-Z])/g, ' $1'));
             toUnitSelect.appendChild(option);
           }
         });
 
         if (toUnitSelect.options.length > 0) {
           toUnitSelect.options[0].selected = true;
+        } else {
+          document.getElementById('converter-result').textContent = 'No target units available for conversion.';
         }
       } catch (e) {
         console.error('Error in updateToUnits:', e);
@@ -651,6 +607,7 @@
     function convertUnits(event) {
       try {
         event.preventDefault();
+        console.log('convertUnits called'); // Debug log
         const fromUnit = document.getElementById('fromUnit').value;
         const toUnit = document.getElementById('toUnit').value;
         const value = parseFloat(document.getElementById('value').value);
@@ -660,23 +617,82 @@
           return;
         }
 
-        const factor = conversionFactors[fromUnit][toUnit];
-        if (!factor) {
-          document.getElementById('converter-result').textContent = 'Conversion not available.';
+        // Determine the unit group and base unit
+        let baseValue;
+        let baseUnit;
+        let fromGroup;
+        for (const g in unitGroups) {
+          if (unitGroups[g].includes(fromUnit)) {
+            fromGroup = g;
+            if (g === 'area') baseUnit = 'sqm';
+            else if (g === 'length') baseUnit = 'meter';
+            else if (g === 'volume') baseUnit = 'cubicmeter';
+            break;
+          }
+        }
+
+        if (!fromGroup) {
+          document.getElementById('converter-result').textContent = 'Invalid source unit selected.';
           return;
         }
 
-        const result = (value * factor).toFixed(4);
-        document.getElementById('converter-result').textContent = `${value} ${fromUnit} = ${result} ${toUnit}`;
+        // Verify toUnit is in the same group
+        if (!unitGroups[fromGroup].includes(toUnit)) {
+          document.getElementById('converter-result').textContent = 'Target unit must be in the same category as the source unit.';
+          return;
+        }
+
+        // Convert from source to base unit
+        if (!baseUnitFactors[fromUnit]) {
+          document.getElementById('converter-result').textContent = 'Conversion factor not available for source unit.';
+          return;
+        }
+        baseValue = value * baseUnitFactors[fromUnit];
+
+        // Convert from base unit to target unit
+        if (!baseUnitFactors[toUnit]) {
+          document.getElementById('converter-result').textContent = 'Conversion factor not available for target unit.';
+          return;
+        }
+        const result = baseValue / baseUnitFactors[toUnit];
+
+        document.getElementById('converter-result').textContent = `${value} ${unitDisplayNames[fromUnit] || fromUnit} = ${result.toFixed(4)} ${unitDisplayNames[toUnit] || toUnit}`;
       } catch (e) {
         console.error('Error in convertUnits:', e);
         document.getElementById('converter-result').textContent = 'Error during conversion. Please check the console.';
       }
     }
 
-    window.onload = function() {
+    document.addEventListener('DOMContentLoaded', function () {
       try {
+        // Set up event listeners for the area form
+        document.getElementById('unit').addEventListener('change', function () {
+          drawPlotAndCalculateArea({ preventDefault: () => {} });
+        });
+        document.getElementById('preferredAreaUnit').addEventListener('change', function () {
+          drawPlotAndCalculateArea({ preventDefault: () => {} });
+        });
+        document.getElementById('width1').addEventListener('input', function () {
+          drawPlotAndCalculateArea({ preventDefault: () => {} });
+        });
+        document.getElementById('width2').addEventListener('input', function () {
+          drawPlotAndCalculateArea({ preventDefault: () => {} });
+        });
+        document.getElementById('height1').addEventListener('input', function () {
+          drawPlotAndCalculateArea({ preventDefault: () => {} });
+        });
+        document.getElementById('height2').addEventListener('input', function () {
+          drawPlotAndCalculateArea({ preventDefault: () => {} });
+        });
+
+        // Initialize unit converter
+        document.getElementById('fromUnit').addEventListener('change', updateToUnits);
         updateToUnits();
+
+        // Add form submission listener for converter
+        document.getElementById('converterForm').addEventListener('submit', convertUnits);
+
+        // Set default values for plot
         document.getElementById('width1').value = 10;
         document.getElementById('width2').value = 10;
         document.getElementById('height1').value = 10;
@@ -685,10 +701,10 @@
         document.getElementById('preferredAreaUnit').value = 'sqm';
         drawPlotAndCalculateArea({ preventDefault: () => {} });
       } catch (e) {
-        console.error('Error in window.onload:', e);
+        console.error('Error in initialization:', e);
         document.getElementById('warning-message').textContent = 'Error initializing the app. Please check the console.';
       }
-    };
+    });
   </script>
 </body>
 </html>
